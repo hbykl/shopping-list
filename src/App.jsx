@@ -8,12 +8,15 @@ function App() {
   function handleDeleteItem(id) {
     setItems(items => items.filter(item => item.id !== id));
   }
+  function handleUpdateItem(id){
+    setItems(items=> items.map(item=>item.id==id?{...item,completed:!item.completed}:item))
+  }
   return (
     <>
       <Header />
       <Form addItem={handleAddItem} />
-      <List items={items} deleteItem={handleDeleteItem} />
-      <Summary />
+      <List items={items} deleteItem={handleDeleteItem} updateItem={handleUpdateItem} />
+      <Summary items={items} />
     </>
   )
 }
@@ -54,13 +57,13 @@ function Form({ addItem }) {
     </form>
   );
 }
-function List({ items, deleteItem }) {
+function List({ items, deleteItem,updateItem }) {
   return <>{
     items.length> 0 ? (
 
       <div className="list">
         <ul>
-          {items.map((i, index) => (<Item item={i} key={index} onDelete={deleteItem} />))}
+          {items.map((i, index) => (<Item item={i} key={index} onDelete={deleteItem} onUpdate={updateItem} />))}
         </ul>
       </div>
     ) :
@@ -70,17 +73,18 @@ function List({ items, deleteItem }) {
   }
   </>;
 }
-function Item({ item, onDelete }) {
+function Item({ item, onDelete, onUpdate }) {
   return (
     <li>
+      <input type="checkbox" checked={item.completed} onChange={()=>onUpdate(item.id)}/>
       <span style={item.completed ? { textDecoration: "line-through" } : {}}>{item.quantity} {item.title}</span>
       <button onClick={() => onDelete(item.id)}>X</button>
     </li>
   );
 }
-function Summary() {
+function Summary({items}) {
   return (
-    <footer className="summary">Alışveriş Sepetinizde 10 adet ürün bulunmaktadır.</footer>
+    <footer className="summary">Alışveriş Sepetinizde {items.length} adet ürün bulunmaktadır.</footer>
   );
 }
 export default App
