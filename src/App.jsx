@@ -1,43 +1,51 @@
 import { useState } from "react";
 
 function App() {
+  const [items, setItems] = useState([]);
+  function handleAddItem(item) {
+    setItems((items) => [...items, item])
+  }
+  function handleDeleteItem(id) {
+    setItems(items => items.filter(item => item.id !== id));
+  }
   return (
     <>
       <Header />
-      <Form />
-      <List/>
-      <Summary/>
+      <Form addItem={handleAddItem} />
+      <List items={items} deleteItem={handleDeleteItem} />
+      <Summary />
     </>
   )
 }
-const items=[
-  {"id":1,"title":"Yumurta","quantity":10,"completed":true},
-  {"id":2,"title":"Ekmek","quantity":2,"completed":false},
-  {"id":3,"title":"Süt","quantity":1,"completed":true},
-  {"id":4,"title":"Et","quantity":3,"completed":true},
-  {"id":5,"title":"Zeytin","quantity":10,"completed":true},
-]
+// const items=[
+//   {"id":1,"title":"Yumurta","quantity":10,"completed":true},
+//   {"id":2,"title":"Ekmek","quantity":2,"completed":false},
+//   {"id":3,"title":"Süt","quantity":1,"completed":true},
+//   {"id":4,"title":"Et","quantity":3,"completed":true},
+//   {"id":5,"title":"Zeytin","quantity":10,"completed":true},
+// ]
 function Header() {
   return (
     <h1>🛒 Shopping List</h1>
   );
 }
-function Form() {
-  const [title,setTitle]=useState("");
-  const [quantity,setQuantity]=useState(1);
-  function handleFormSubmit(e){
+function Form({ addItem }) {
+  const [title, setTitle] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  function handleFormSubmit(e) {
     e.preventDefault();
-    const item={id:Date.now(),title,quantity,completed:false}
+    const item = { id: Date.now(), title, quantity, completed: false }
     console.log(item);
+    addItem(item);
     setTitle('');
     setQuantity(1);
   }
   return (
     <form className="form" onSubmit={handleFormSubmit} >
-      <input type="text" placeholder="Ürün adı giriniz" value={title} onChange={(e)=>setTitle(e.target.value)}/>
-      <select value={quantity} onChange={(e)=>setQuantity(Number(e.target.value))}>
+      <input type="text" placeholder="Ürün adı giriniz" value={title} onChange={(e) => setTitle(e.target.value)} />
+      <select value={quantity} onChange={(e) => setQuantity(Number(e.target.value))}>
         {
-          Array.from({length:10},(v,i)=>i+1).map(num=>
+          Array.from({ length: 10 }, (v, i) => i + 1).map(num =>
             <option value={num} key={num}>{num}</option>
           )
         }
@@ -46,20 +54,27 @@ function Form() {
     </form>
   );
 }
-function List() {
-  return (
-    <div className="list">
-      <ul>
-        {items.map((i,index)=>(<Item item={i} key={index}/>))}
-      </ul>
-    </div>
-  );
+function List({ items, deleteItem }) {
+  return <>{
+    items.length> 0 ? (
+
+      <div className="list">
+        <ul>
+          {items.map((i, index) => (<Item item={i} key={index} onDelete={deleteItem} />))}
+        </ul>
+      </div>
+    ) :
+      (<p>
+        No items in list
+      </p>)
+  }
+  </>;
 }
-function Item({item}) {
+function Item({ item, onDelete }) {
   return (
     <li>
-      <span style={item.completed?{textDecoration:"line-through"}:{}}>{item.quantity} {item.title}</span>
-      <button>X</button>
+      <span style={item.completed ? { textDecoration: "line-through" } : {}}>{item.quantity} {item.title}</span>
+      <button onClick={() => onDelete(item.id)}>X</button>
     </li>
   );
 }
