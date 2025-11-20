@@ -8,8 +8,8 @@ function App() {
   function handleDeleteItem(id) {
     setItems(items => items.filter(item => item.id !== id));
   }
-  function handleUpdateItem(id){
-    setItems(items=> items.map(item=>item.id==id?{...item,completed:!item.completed}:item))
+  function handleUpdateItem(id) {
+    setItems(items => items.map(item => item.id == id ? { ...item, completed: !item.completed } : item))
   }
   return (
     <>
@@ -57,9 +57,9 @@ function Form({ addItem }) {
     </form>
   );
 }
-function List({ items, deleteItem,updateItem }) {
+function List({ items, deleteItem, updateItem }) {
   return <>{
-    items.length> 0 ? (
+    items.length > 0 ? (
 
       <div className="list">
         <ul>
@@ -67,8 +67,8 @@ function List({ items, deleteItem,updateItem }) {
         </ul>
       </div>
     ) :
-      (<p>
-        No items in list
+      (<p className="list">
+        Sepette ürün yok.
       </p>)
   }
   </>;
@@ -76,15 +76,24 @@ function List({ items, deleteItem,updateItem }) {
 function Item({ item, onDelete, onUpdate }) {
   return (
     <li>
-      <input type="checkbox" checked={item.completed} onChange={()=>onUpdate(item.id)}/>
+      <input type="checkbox" checked={item.completed} onChange={() => onUpdate(item.id)} />
       <span style={item.completed ? { textDecoration: "line-through" } : {}}>{item.quantity} {item.title}</span>
       <button onClick={() => onDelete(item.id)}>X</button>
     </li>
   );
 }
-function Summary({items}) {
+function Summary({ items }) {
+  if (items.length == 0) { return (<p className="summary"> Sepetinizde ürün bulunmamaktadır.</p>); }
+
+  const completed = items.filter(item => item.completed).length
   return (
-    <footer className="summary">Alışveriş Sepetinizde {items.length} adet ürün bulunmaktadır.</footer>
+    <footer className="summary">
+      {items.length == completed ? <p>Alışverişi tamamladınız.</p> :
+        <>
+          <p>Alışveriş Sepetinizde {items.length} adet ürün bulunmaktadır.</p>
+          <p>Bu ürünlerden {completed} tanesini aldınız.</p></>
+      }
+    </footer>
   );
 }
 export default App
